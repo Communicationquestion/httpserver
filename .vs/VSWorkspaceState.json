@@ -10,10 +10,11 @@
       "configure": "linux-debug"
     }
   },
+  "ActiveTargetSystem": "192.168.188.130",
   "ExpandedNodes": [
-    ""
+    "",
+    "\\out\\build",
+    "\\out\\build\\x64-debug"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
-  "PreviewInSolutionExplorer": false,
-  "ActiveTargetSystem": "192.168.188.130"
+  "PreviewInSolutionExplorer": false
 }
