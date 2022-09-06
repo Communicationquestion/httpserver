@@ -17,7 +17,7 @@ public:
     int a;
     virtual int run()
     {
-     
+        std::unique_lock<std::mutex> ul(m);
         cnt= q(a);
         return 0;
     }

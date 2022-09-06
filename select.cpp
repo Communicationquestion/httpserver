@@ -30,7 +30,7 @@ int initserver(int port) {
 }
 
 int listenfun(int sockserver) {
-	task t[10];
+	task t[100];
 	
 	
 	threadpool pool(1024);
@@ -97,7 +97,7 @@ int listenfun(int sockserver) {
 					pool.push_rewu_tasks(&t[eventfd]);
 
 					if (t[eventfd].cnt==false) {
-						close(t[eventfd].a);
+						//close(t[eventfd].a);
 						printf("client(eventfd=%d) disconnected.\n", t[eventfd].a);
 						
 						t[eventfd].cnt = true;
