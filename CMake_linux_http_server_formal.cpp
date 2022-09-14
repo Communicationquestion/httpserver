@@ -7,12 +7,9 @@
 
 int main()
 {
-	
-
 	listenfun(initserver(8888));
 
 	getchar();
 
-	
 	return 0;
 }

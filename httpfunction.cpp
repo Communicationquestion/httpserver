@@ -51,13 +51,35 @@ void cat(int client, FILE* resource) {
 
 void headers(int client, const char* filename) {
 	char buf[1024];
-	(void)filename;  /* could use filename to determine file type */
+	char sg[1024] = {};
+	char* sc = new char[strlen(filename) + 1];
+	strcpy(sc, filename);
+	auto i = 0;
+	for (int j=0;j<strlen(filename)+1;++j)
+	{
+		if (*sc == '.') {
+			sg[1024] = {};
+			i = 0;
+		}
+		sg[i] = *sc;
+		++i;
+		++sc;
+	}
+	std::cout << sg << std::endl;
+	std::vector<std::string> s1 = { ".js",".avi",".css",".html",".wasm"};
+	std::vector<std::string> s2 = { "Content-Type: text/javascript\r\n","Content-Type: video/x-msvideo\r\n","Content-Type: text/css\r\n","Content-Type: text/html\r\n","Content-Type: application/wasm\r\n"};
+	url<std::string, std::string> str(s1, s2);
+
+	auto res = str.findtype(sg, s1);
+	const char* ress;
 	
+	//(void) filename;  /* could use filename to determine file type */
+	std::cout <<"res " << res << std::endl;
 	strcpy(buf, "HTTP/1.0 200 OK\r\n");
 	send(client, buf, strlen(buf), 0);
 	strcpy(buf, SERVER_STRING);
 	send(client, buf, strlen(buf), 0);
-	sprintf(buf, "Content-Type: text/html\r\n");
+	sprintf(buf, res.c_str());
 	send(client, buf, strlen(buf), 0);
 	strcpy(buf, "\r\n");
 	send(client, buf, strlen(buf), 0);
@@ -79,14 +101,14 @@ void serve_file(int client, const char* filename) {
 	resource = fopen(filename, "r");
 	if (resource == NULL)
 		//not_found(client);
-		printf("not found");
+		printf("not found\n");
 	else {
 		//打开成功后，将这个文件的基本信息封装成 response 的头部(header)并返回
 		headers(client, filename);
 		//接着把这个文件的内容读出来作为 response 的 body 发送到客户端
 		cat(client, resource);
 	}
-	printf("over read file\n");
+	
 	fclose(resource);
 	
 
@@ -120,6 +142,8 @@ bool accept_request(int client) {
 	i = 0;
 	j = 0;
 	// 拿到请求方法 get 或 post 等。
+
+	printf("%s", buffer);
 	while (!ISspace(buffer[j]) && (i < sizeof(method) - 1)) {
 		method[i] = buffer[j];
 		//printf("%s",buffer[j]);
@@ -207,7 +231,9 @@ bool accept_request(int client) {
 		if (!cgi) {
 			//如果不需要 cgi 机制的话，
 			std::unique_lock<std::mutex> ulock(m);
+			printf("serve_file %s\n", path);
 			serve_file(client, path);
+			
 			ulock.unlock();
 		
 		}
