@@ -3,8 +3,13 @@
 #include<mutex>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/sendfile.h>
 #include <iostream>
-#define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<string>
+#define SERVER_STRING "Cache-Control: max-age=31536000, immutable\r\n"
 std::mutex m;
 int get_line(int sock, char* buf, int size) {
 	int i = 0;
@@ -38,6 +43,14 @@ int get_line(int sock, char* buf, int size) {
 }
 
 
+int catbinary(int client, int fd) {
+	std::cout << "++++++++++++++++++++++++++++" << std::endl;
+	struct stat stat_buf;
+	fstat(fd, &stat_buf);
+	sendfile(client, fd, NULL, stat_buf.st_size);
+
+}
+
 void cat(int client, FILE* resource) {
 	char buf[1024];
 
@@ -55,7 +68,7 @@ void headers(int client, const char* filename) {
 	char* sc = new char[strlen(filename) + 1];
 	strcpy(sc, filename);
 	auto i = 0;
-	for (int j=0;j<strlen(filename)+1;++j)
+	for (int j = 0; j < strlen(filename) + 1; ++j)
 	{
 		if (*sc == '.') {
 			sg[1024] = {};
@@ -66,26 +79,29 @@ void headers(int client, const char* filename) {
 		++sc;
 	}
 	std::cout << sg << std::endl;
-	std::vector<std::string> s1 = { ".js",".avi",".css",".html",".wasm"};
-	std::vector<std::string> s2 = { "Content-Type: text/javascript\r\n","Content-Type: video/x-msvideo\r\n","Content-Type: text/css\r\n","Content-Type: text/html\r\n","Content-Type: application/wasm\r\n"};
+	std::vector<std::string> s1 = { ".js",".avi",".css",".html",".wasm",".ico",".jpg" };
+	std::vector<std::string> s2 = { "Content-Type: text/javascript; charset=utf-8\r\n","Content-Type: video/x-msvideo\r\n","Content-Type: text/css\r\n","Content-Type: text/html; charset=utf-8\r\n","Content-Type: application/wasm\r\n","Content-Type: image/x-icon\r\n","Content-Type: application/x-jpg\r\n" };
 	url<std::string, std::string> str(s1, s2);
 
 	auto res = str.findtype(sg, s1);
 	const char* ress;
-	
+
 	//(void) filename;  /* could use filename to determine file type */
-	std::cout <<"res " << res << std::endl;
+	std::cout << "res " << res << std::endl;
 	strcpy(buf, "HTTP/1.0 200 OK\r\n");
 	send(client, buf, strlen(buf), 0);
 	strcpy(buf, SERVER_STRING);
 	send(client, buf, strlen(buf), 0);
 	sprintf(buf, res.c_str());
 	send(client, buf, strlen(buf), 0);
+	strcpy(buf, "X-Content-Type-Options: nosniff\r\n");
+	send(client, buf, strlen(buf), 0);
+
 	strcpy(buf, "\r\n");
 	send(client, buf, strlen(buf), 0);
-	}
+}
 void serve_file(int client, const char* filename) {
-	
+
 	FILE* resource = NULL;
 	int numchars = 1;
 	char buf[1024];
@@ -98,35 +114,70 @@ void serve_file(int client, const char* filename) {
 		numchars = get_line(client, buf, sizeof(buf));
 
 	//打开这个传进来的这个路径所指的文件
-	resource = fopen(filename, "r");
-	if (resource == NULL)
-		//not_found(client);
-		printf("not found\n");
-	else {
-		//打开成功后，将这个文件的基本信息封装成 response 的头部(header)并返回
-		headers(client, filename);
-		//接着把这个文件的内容读出来作为 response 的 body 发送到客户端
-		cat(client, resource);
+	char sg[1024] = {};
+	char* sc = new char[strlen(filename) + 1];
+	strcpy(sc, filename);
+	auto i = 0;
+	for (int j = 0; j < strlen(filename) + 1; ++j)
+	{
+		if (*sc == '.') {
+			sg[1024] = {};
+			i = 0;
+		}
+		sg[i] = *sc;
+		++i;
+		++sc;
 	}
 	
-	fclose(resource);
-	
+
+	if (strcmp(sg, ".wasm") == 0 || strcmp(sg, ".jpg") == 0) {
+
+		int fd = open(filename, O_RDONLY);
+		if (fd== -1)
+			//not_found(client);
+			printf("not found\n");
+		else {
+			//打开成功后，将这个文件的基本信息封装成 response 的头部(header)并返回
+			headers(client, filename);
+			//接着把这个文件的内容读出来作为 response 的 body 发送到客户端
+
+			catbinary(client, fd);
+		}
+		close(fd);
+	}
+	else
+	{
+		resource = fopen(filename, "r");
+		if (resource == NULL)
+			//not_found(client);
+			printf("not found\n");
+		else {
+			//打开成功后，将这个文件的基本信息封装成 response 的头部(header)并返回
+			headers(client, filename);
+			//接着把这个文件的内容读出来作为 response 的 body 发送到客户端
+			cat(client, resource);
+		}
+		fclose(resource);
+	}
+
+
+
 
 }
 
 int sendbuffer(int fd, char* buffer) {
-	
-	
+
+
 	std::cout << "write qian" << std::endl;
 	write(fd, buffer, strlen(buffer));
-	
+
 	return 1;
 }
 
 
 bool accept_request(int client) {
 	printf("com in accept\n");
-	
+
 	char buffer[1024];
 	char method[255];
 	size_t i, j;
@@ -154,7 +205,7 @@ bool accept_request(int client) {
 
 
 	method[i] = '\0';
-	std::cout << method<<" method"<< std::endl;
+	std::cout << method << " method" << std::endl;
 	//判断请求方法 是否为get或post 
 	if (strcasecmp(method, "GET") && strcasecmp(method, "POST")) {
 		printf("erro method\n");
@@ -209,7 +260,7 @@ bool accept_request(int client) {
 		while ((numchars > 0) && strcmp("\n", buffer)) { /* read & discard headers */
 			//numchars = get_line(client, buffer, sizeof(buf));
 		//然后返回一个找不到文件的 response 给客户端
-			printf("not find file");
+			printf("not find file\n");
 			return false;
 			//not_found(client);
 		}
@@ -233,11 +284,11 @@ bool accept_request(int client) {
 			std::unique_lock<std::mutex> ulock(m);
 			printf("serve_file %s\n", path);
 			serve_file(client, path);
-			
+
 			ulock.unlock();
-		
+
 		}
-		else{
+		else {
 			//如果需要则调用
 			//execute_cgi(client, path, method, query_string);
 			printf("cgi");
@@ -246,7 +297,7 @@ bool accept_request(int client) {
 
 	printf("client(eventfd=%d) disconnected.\n", client);
 	close(client);
-	
+
 	return false;
 }
 
