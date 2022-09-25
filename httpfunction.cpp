@@ -44,7 +44,7 @@ int get_line(int sock, char* buf, int size) {
 
 
 int catbinary(int client, int fd) {
-	std::cout << "++++++++++++++++++++++++++++" << std::endl;
+	
 	struct stat stat_buf;
 	fstat(fd, &stat_buf);
 	sendfile(client, fd, NULL, stat_buf.st_size);
@@ -130,7 +130,7 @@ void serve_file(int client, const char* filename) {
 	}
 	
 
-	if (strcmp(sg, ".wasm") == 0 || strcmp(sg, ".jpg") == 0) {
+	if (strcmp(sg, ".wasm") == 0 || strcmp(sg, ".jpg") == 0|| strcmp(sg, ".ico") == 0) {
 
 		int fd = open(filename, O_RDONLY);
 		if (fd== -1)
