@@ -1,0 +1,47 @@
+{
+  "DevContainersInfoBarHidden": true,
+  "MRUPresetsPerTargetSystem": {
+    "本地计算机": {
+      "configure": "x64-debug"
+    },
+    "192.168.188.130": {
+      "configure": "linux-debug"
+    },
+    "119.3.140.16": {
+      "configure": "linux-debug"
+    },
+    "WSL: Ubuntu": {
+      "configure": "linux-debug"
+    }
+  },
+  "OutputFoldersPerTargetSystem": {
+    "本地计算机": [
+      "out\\build\\x64-debug",
+      "out\\install\\x64-debug",
+      "out\\build\\x64-release",
+      "out\\install\\x64-release",
+      "out\\build\\x86-debug",
+      "out\\install\\x86-debug",
+      "out\\build\\x86-release",
+      "out\\install\\x86-release"
+    ],
+    "WSL: Ubuntu": [
+      "out\\build\\WSL-GCC-Debug",
+      "out\\install\\WSL-GCC-Debug",
+      "out\\build\\Linux-GCC-Debug",
+      "out\\install\\Linux-GCC-Debug"
+    ],
+    "192.168.136.128": [
+      "out\\build\\WSL-GCC-Debug",
+      "out\\install\\WSL-GCC-Debug",
+      "out\\build\\Linux-GCC-Debug",
+      "out\\install\\Linux-GCC-Debug"
+    ]
+  },
+  "ExpandedNodes": [
+    ""
+  ],
+  "SelectedNode": "\\CMakeLists.txt",
+  "PreviewInSolutionExplorer": false,
+  "ActiveTargetSystem": "WSL: Ubuntu"
+}
