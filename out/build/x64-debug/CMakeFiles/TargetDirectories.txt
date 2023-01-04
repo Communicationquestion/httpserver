@@ -1,3 +1,0 @@
-D:/code/C++/C++Program/CMake_linux_http_server_formal/out/build/x64-debug/CMakeFiles/CMake_linux_http_server_formal.dir
-D:/code/C++/C++Program/CMake_linux_http_server_formal/out/build/x64-debug/CMakeFiles/edit_cache.dir
-D:/code/C++/C++Program/CMake_linux_http_server_formal/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
