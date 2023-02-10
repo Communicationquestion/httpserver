@@ -2,7 +2,12 @@
 # 项目特定的逻辑。
 #
 cmake_minimum_required (VERSION 3.8)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED	ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
 project(CMake_linux_http_server_formal LANGUAGES C CXX)
+
 find_package(Threads)
 # 将源代码添加到此项目的可执行文件。
 
