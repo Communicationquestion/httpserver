@@ -1,5 +1,6 @@
 {
   "DevContainersInfoBarHidden": true,
+  "ActiveTargetSystem": "121.37.178.39",
   "MRUPresetsPerTargetSystem": {
     "本地计算机": {
       "configure": "x64-debug"
@@ -36,12 +37,17 @@
       "out\\install\\WSL-GCC-Debug",
       "out\\build\\Linux-GCC-Debug",
       "out\\install\\Linux-GCC-Debug"
+    ],
+    "121.37.178.39": [
+      "out\\1936706428\\build\\linux-debug",
+      "out\\1936706428\\install\\linux-debug"
     ]
   },
   "ExpandedNodes": [
-    ""
+    "",
+    "\\build",
+    "\\src"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
-  "PreviewInSolutionExplorer": false,
-  "ActiveTargetSystem": "WSL: Ubuntu"
+  "SelectedNode": "\\src\\select.cpp",
+  "PreviewInSolutionExplorer": false
 }
