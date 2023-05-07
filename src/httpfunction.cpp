@@ -57,18 +57,24 @@ int catbinary(int client, int fd) {
 		// print error message
 		return 0;
 	}
-
-	ret = sendfile(client, fd, NULL, stat.st_size);
-	if (ret == -1)
+	try
 	{
-		// print error message
-		return 0;
+		signal(SIGPIPE, SIG_IGN);
+		ret = sendfile(client, fd, NULL, stat.st_size);
+		if (ret <= 0)
+		{
+			// print error message
+			return 0;
+		}
+	}
+	catch (const std::exception& e)
+	{
+		printf("errrno is:%d", errno);
+		std::cout << "Exception: " << e.what();
 	}
 
 	std::cout << "enter sendfile over" << std::endl;
 	return 0;
-
-
 }
 
 void cat(int client, FILE* resource) {
