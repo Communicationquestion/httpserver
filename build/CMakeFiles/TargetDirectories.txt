@@ -1,3 +1,0 @@
-/home/emt/CMake_linux_http_server_formal/build/CMakeFiles/CMake_linux_http_server_formal.dir
-/home/emt/CMake_linux_http_server_formal/build/CMakeFiles/edit_cache.dir
-/home/emt/CMake_linux_http_server_formal/build/CMakeFiles/rebuild_cache.dir
